@@ -189,6 +189,9 @@ class HTTPClient:
     def send_message(self, *, params: RequestParams):
         return self.request(Route("POST", "sendMessage", self.token), json=params.payload)
 
+    def answer_callback_query(self, *, params: RequestParams):
+        return self.request(Route("POST", "answerCallbackQuery", self.token), json=params.payload)
+
     def forward_message(self, *, params: RequestParams):
         return self.request(Route("POST", "forwardMessage", self.token), json=params.payload)
 

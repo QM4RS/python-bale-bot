@@ -76,3 +76,28 @@ class CallbackQuery(BaleObject):
         data["message"] = Message.from_dict(data.get("message"), bot)
 
         return super().from_dict(data, bot)
+
+    def answer(
+            self,
+            text: Optional[str] = None,
+            show_alert: bool = False,
+            cache_time: Optional[int] = None
+    ):
+        """
+        Respond to the callback query to remove the loading state and optionally display an alert.
+
+        Args:
+            text: Text of the notification. If not set, no notification is shown.
+            show_alert: If True, displays an alert popup instead of a toast.
+            cache_time: The maximum amount of time in seconds that the result of the callback query may be cached client-side.
+        """
+        payload: Dict[str, object] = {"callback_query_id": self.id}
+        if text is not None:
+            payload["text"] = text
+        if show_alert:
+            payload["show_alert"] = True
+        if cache_time is not None:
+            payload["cache_time"] = cache_time
+
+        # Use internal request method to call Bale API
+        return self.bot.answer_callback_query(self.id, text, show_alert, cache_time)

@@ -606,6 +606,38 @@ class Bot:
 
         return result
 
+    async def answer_callback_query(
+        self,
+        callback_query_id: str,
+        text: Optional[str] = None,
+        show_alert: bool = False,
+        cache_time: Optional[int] = None
+    ) -> bool:
+        """
+        Respond to a callback query to remove the loading state and optionally display an alert.
+
+        Args:
+            callback_query_id: شناسه‌ی callback query
+            text: متن پیغام نوتیفیکیشن
+            show_alert: اگر True باشد، پیغام به‌صورت پنجره‌ی هشدار نمایش داده می‌شود
+            cache_time: حداکثر زمان کش سمت کلاینت به ثانیه
+        Returns:
+            True در صورت موفقیت، False در غیر این صورت
+        """
+        payload: Dict[str, object] = {"callback_query_id": callback_query_id}
+        if text is not None:
+            payload["text"] = text
+        if show_alert:
+            payload["show_alert"] = True
+        if cache_time is not None:
+            payload["cache_time"] = cache_time
+
+        # ارسال درخواست به Bale API
+        response = await self._http.answer_callback_query(
+            params=handle_request_param(payload)
+        )
+        return bool(response.result)
+
     @arguments_shield
     async def forward_message(self, chat_id: Union[str, int], from_chat_id: Union[str, int], message_id: Union[str, int]):
         """This service is used to send text messages.
