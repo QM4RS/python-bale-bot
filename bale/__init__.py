@@ -1,36 +1,44 @@
 """
-Python Bale Bot
-~~~~~~~~~~~~~~~
+Bale API Wrapper
+~~~~~~~~~~~~~~~~~~~
 
 An API wrapper for Bale written in Python.
 
-Copyright (C) 2024. All Rights Reserved.
+:copyright: (c) 2022-present, Kian Ahmadian
+:license: GPL-2.0, see LICENSE for more details.
 
 """
 
 __all__ = (
-    "MissingValueType",
-    "MissingValue",
+    "__version__",
     "BaleObject",
-    "WebhookInfo",
-    "WaitContext",
-    "InputFile",
-    "BaseFile",
+    "InlineKeyboardButton",
+    "MenuKeyboardButton",
+    "ReplyMarkupItem",
+    "InlineKeyboardMarkup",
+    "MenuKeyboardMarkup",
     "PhotoSize",
-    "Document",
-    "Voice",
+    "ChatPhoto",
+    "BaseFile",
     "Audio",
     "Contact",
     "Location",
+    "Document",
     "Video",
     "Animation",
-    "InputMedia",
-    "InputMediaPhoto",
-    "InputMediaVideo",
-    "InputMediaAnimation",
-    "InputMediaAudio",
-    "InputMediaDocument",
-    "ChatPhoto",
+    "InputFile",
+    "Sticker",
+    "LabeledPrice",
+    "Invoice",
+    "SuccessfulPayment",
+    "User",
+    "Chat",
+    "Message",
+    "State",
+    "ChatMember",
+    "CallbackQuery",
+    "Update",
+    "Updater",
     "BaleError",
     "APIError",
     "NetworkError",
@@ -42,63 +50,27 @@ __all__ = (
     "InvalidToken",
     "RateLimited",
     "BadRequest",
-    "LabeledPrice",
-    "Invoice",
-    "SuccessfulPayment",
-    "State",
-    "Sticker",
-    "InlineKeyboardMarkup",
-    "MenuKeyboardMarkup",
-    "MenuKeyboardButton",
-    "InlineKeyboardButton",
-    "ReplyMarkupItem",
-    "Updater",
-    "User",
-    "ChatMember",
-    "Chat",
-    "Message",
-    "CallbackQuery",
-    "Update",
-    "Bot",
-    "__version__"
+    "Bot"
 )
 
-from .utils.types import MissingValueType, MissingValue
-from ._baleobject import BaleObject
-from ._webhookinfo import WebhookInfo
-from ._waitcontext import WaitContext
-from .attachments import (
-    InputFile, BaseFile, PhotoSize, Document, Voice, Audio, Contact, Location, Video, Animation, InputMedia,
-    InputMediaPhoto, InputMediaVideo, InputMediaAnimation, InputMediaAudio, InputMediaDocument
-)
-from ._chatphoto import ChatPhoto
-from ._error import (
-    BaleError,
-    APIError,
-    NetworkError,
-    HTTPException,
-    TimeOut,
-    NotFound,
-    Forbidden,
-    HTTPClientError,
-    InvalidToken,
-    RateLimited,
-    BadRequest
-)
-from .payments import LabeledPrice, Invoice, SuccessfulPayment
-from ._state import State
-from ._sticker import Sticker
-from .ui import InlineKeyboardMarkup, MenuKeyboardMarkup, MenuKeyboardButton, InlineKeyboardButton, ReplyMarkupItem
-from ._updater import Updater
-from ._user import User
-from ._chatmember import ChatMember
-from ._chat import Chat
-from ._message import Message
-from ._callbackquery import CallbackQuery
-from ._update import Update
-from ._bot import Bot
 from .version import __version__
+from .baleobject import BaleObject
+from .ui import InlineKeyboardMarkup, MenuKeyboardMarkup, MenuKeyboardButton, InlineKeyboardButton, ReplyMarkupItem
+from .attachments import InputFile, PhotoSize, BaseFile, Document, Audio, Contact, Location, Video, Animation
+from .sticker import Sticker
+from .payments import LabeledPrice, Invoice, SuccessfulPayment
+from .user import User
+from .chatphoto import ChatPhoto
+from .chat import Chat
+from .message import Message
+from .chatmember import ChatMember
+from .callbackquery import CallbackQuery
+from .update import Update
+from .updater import Updater
+from .error import BaleError, APIError, NetworkError, HTTPException, TimeOut, NotFound, Forbidden, HTTPClientError, InvalidToken, RateLimited, BadRequest
+from .state import State
+from .bot import Bot
 
 __title__ = "python-bale-bot"
 __author__ = "Kian Ahmadian"
-__copyright__ = "Copyright 2024, Present by Kian Ahmadian"
+__copyright__ = "Copyright 2023, Present by Kian Ahmadian"

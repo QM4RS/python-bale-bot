@@ -19,7 +19,7 @@ __all__ = (
     "find"
 )
 
-PF = TypeVar('PF')
+T = TypeVar('T')
 
 def create_deep_linked_url(bot_username: str, payload: str) -> str:
     """Creating a deep link for the bot.
@@ -29,9 +29,9 @@ def create_deep_linked_url(bot_username: str, payload: str) -> str:
 
     Parameters
     ----------
-        bot_username: :obj:`str`
+        bot_username: :class:`str`
             The username of bot.
-        payload: :obj:`str`
+        payload: :class:`str`
             The Payload of deep link
     """
     if len(bot_username) < 4 or not bot_username.lower().endswith('bot'):
@@ -55,14 +55,14 @@ def parse_time(data: Optional[int]) -> Optional[datetime]:
             raise exc
         return None
 
-def find(predicate: Callable[[PF], Any], iterable: Iterable[PF]) -> Optional[PF]:
+def find(predicate: Callable[[T], Any], iterable: Iterable[T]) -> Optional[T]:
     """A helper to return the first element in the sequence that meets the predicate.
 
     Parameters
     ----------
         predicate:
             A function to return boolean-like result.
-        iterable: :obj:`str`
+        iterable: :class:`str`
             An iterable to search through.
     """
     for element in iterable:

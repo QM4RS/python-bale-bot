@@ -1,9 +1,3 @@
-from ._invoice import Invoice
-from ._labeledprice import LabeledPrice
-from ._successfulpayment import SuccessfulPayment
-
-__all__ = (
-    "Invoice",
-    "LabeledPrice",
-    "SuccessfulPayment"
-)
+from .invoice import Invoice
+from .price import LabeledPrice
+from .successful_payment import SuccessfulPayment
