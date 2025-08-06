@@ -19,6 +19,7 @@ from bale import (State, Message, Update, User, MenuKeyboardMarkup, InlineKeyboa
                   Location, Contact, InputFile, CallbackQuery, SuccessfulPayment)
 from bale.request import HTTPClient, handle_request_param
 from weakref import WeakValueDictionary
+from bale.payments import PreCheckoutQuery
 
 __all__ = (
     "Bot"
@@ -180,6 +181,16 @@ class Bot:
             self.events[event_name] = []
 
         self.events[event_name].append(wrapper)
+
+    @overload
+    async def wait_for(
+            self,
+            event_name: Literal['pre_checkout_query'],
+            *,
+            check: Optional[Callable[..., bool]] = None,
+            timeout: Optional[float] = None
+    ) -> "PreCheckoutQuery":
+        ...
 
     @overload
     async def wait_for(self, event_name: Literal['update'], *,
@@ -1248,6 +1259,51 @@ class Bot:
             await self.delete_message(result.chat_id, result.message_id, delay=delete_after)
 
         return result
+
+    async def answer_pre_checkout_query(
+            self,
+            pre_checkout_query_id: str,
+            ok: bool,
+            error_message: Optional[str] = None
+    ) -> bool:
+        """Respond to an incoming *pre-checkout* query.
+
+        This must be called within **10 seconds** after receiving the
+        ``pre_checkout_query`` update; otherwise the payment will be aborted.
+
+        Parameters
+        ----------
+        pre_checkout_query_id : str
+            Identifier of the query to be answered.
+        ok : bool
+            Pass ``True`` to approve the payment, or ``False`` to decline.
+        error_message : Optional[str]
+            Required if *ok* is ``False`` – a human-readable
+            description (1-255 chars) explaining why the payment cannot be completed.
+
+        Returns
+        -------
+        bool
+            ``True`` on success.
+        """
+        if not isinstance(pre_checkout_query_id, str):
+            raise TypeError("pre_checkout_query_id must be type of str")
+        if not isinstance(ok, bool):
+            raise TypeError("ok must be type of bool")
+        if not ok and not error_message:
+            raise ValueError("error_message is required when ok is False")
+        if error_message and not isinstance(error_message, str):
+            raise TypeError("error_message must be type of str")
+
+        payload = dict(
+            pre_checkout_query_id=pre_checkout_query_id,
+            ok=ok,
+            error_message=error_message,
+        )
+        response = await self._http.answer_pre_checkout_query(
+            params=handle_request_param(payload)
+        )
+        return response.result or False
 
     async def edit_message(self, chat_id: Union[str, int], message_id: Union[str, int], text: str, *,
                            components: Optional[Union["InlineKeyboardMarkup", "MenuKeyboardMarkup"]] = None) -> "Message":

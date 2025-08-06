@@ -132,6 +132,8 @@ class Updater:
                     self.bot.dispatch("member_chat_join", update.message, update.message.chat, user)
             if update.message.left_chat_member:
                 self.bot.dispatch("member_chat_leave", update.message, update.message.chat, update.message.left_chat_member)
+            if update.pre_checkout_query:
+                self.bot.dispatch("pre_checkout_query", update.pre_checkout_query)
         elif update.edited_message:
             self.bot.dispatch("message_edit", update.edited_message)
 

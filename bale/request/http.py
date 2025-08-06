@@ -210,6 +210,9 @@ class HTTPClient:
     def send_invoice(self, *, params: RequestParams):
         return self.request(Route("POST", "sendInvoice", self.token), json=params.payload)
 
+    def answer_pre_checkout_query(self, *, params: RequestParams):
+        return self.request(Route("POST", "answerPreCheckoutQuery", self.token), json=params.payload)
+
     def send_location(self, *, params: RequestParams):
         return self.request(Route("POST", "sendLocation", self.token), json=params.payload)
 
@@ -263,3 +266,6 @@ class HTTPClient:
 
     def promote_chat_member(self, *, params: RequestParams):
         return self.request(Route("POST", "promoteChatMember", self.token), json=params.payload)
+
+    def answer_pre_checkout_query(self, *, params: RequestParams):
+        return self.request(Route("POST", "answerPreCheckoutQuery", self.token), json=params.payload)
