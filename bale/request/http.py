@@ -266,6 +266,3 @@ class HTTPClient:
 
     def promote_chat_member(self, *, params: RequestParams):
         return self.request(Route("POST", "promoteChatMember", self.token), json=params.payload)
-
-    def answer_pre_checkout_query(self, *, params: RequestParams):
-        return self.request(Route("POST", "answerPreCheckoutQuery", self.token), json=params.payload)
