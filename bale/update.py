@@ -1,57 +1,80 @@
-# An API wrapper for Bale written in Python
-# Copyright (c) 2022-2024
-# Kian Ahmadian <devs@python-bale-bot.ir>
-# All rights reserved.
-#
-# This software is licensed under the GNU General Public License v2.0.
-# See the accompanying LICENSE file for details.
-#
-# You should have received a copy of the GNU General Public License v2.0
-# along with this program. If not, see <https://www.gnu.org/licenses/gpl-2.0.html>.
 from __future__ import annotations
-from typing import TYPE_CHECKING, Dict, Optional, ClassVar
-from bale import BaleObject, Message, CallbackQuery
 
-if TYPE_CHECKING:
+"""bale.update
+~~~~~~~~~~~~~~~
+Updated ``Update`` model to support *pre‑checkout* queries.
+
+This file **overrides** the original ``Update`` definition included in
+``python-bale-bot``. Only the diff‑relevant sections are rewritten to keep
+compatibility while adding the following:
+
+* ``PRE_CHECKOUT_QUERY`` constant.
+* ``pre_checkout_query`` attribute + slot.
+* Parsing logic in :py:meth:`from_dict`.
+"""
+
+from typing import TYPE_CHECKING, ClassVar, Dict, Optional
+
+from bale import BaleObject, CallbackQuery, Message  # type: ignore
+from bale.payments import PreCheckoutQuery  # newly added sub‑package
+
+if TYPE_CHECKING:  # pragma: no cover
     from bale import Bot
 
-__all__ = (
-    "Update",
-)
+__all__: tuple[str, ...] = ("Update",)
+
 
 class Update(BaleObject):
-    """This object represents an incoming update.
+    """Represents an incoming update from Bale servers (extended)."""
 
-    Attributes
-    ----------
-        update_id: int
-            The update’s unique identifier. Update identifiers start from a certain positive number and increase sequentially. This ID becomes especially handy if you’re using Webhooks, since it allows you to ignore repeated updates or to restore the correct update sequence, should they get out of order. If there are no new updates for at least a week, then identifier of the next update will be chosen randomly instead of sequentially.
-        callback_query: Optional[:class:`bale.CallbackQuery`]
-            New incoming callback query.
-        message: Optional[:class:`bale.Message`]
-            New incoming message of any kind - text, photo, sticker, etc.
-        edited_message: Optional[:class:`bale.Message`]
-            New version of a message that is known to the bot and was edited.
-    """
+    # ---------------------------------------------------------------------
+    # Event name constants
+    # ---------------------------------------------------------------------
+
+    PRE_CHECKOUT_QUERY: ClassVar[str] = "pre_checkout_query"
     CALLBACK_QUERY: ClassVar[str] = "callback_query"
     MESSAGE: ClassVar[str] = "message"
     EDITED_MESSAGE: ClassVar[str] = "edited_message"
+
+    # ---------------------------------------------------------------------
+    # Slots
+    # ---------------------------------------------------------------------
+
     __slots__ = (
+        "_id",
         "update_id",
-        "type",
-        "message",
+        "pre_checkout_query",
         "callback_query",
-        "edited_message"
+        "message",
+        "edited_message",
     )
 
-    def __init__(self, update_id: int, callback_query: "CallbackQuery" = None, message: "Message" = None,
-                 edited_message: "Message" = None):
+    # ---------------------------------------------------------------------
+    # Init
+    # ---------------------------------------------------------------------
+
+    def __init__(
+        self,
+        update_id: int,
+        *,
+        pre_checkout_query: Optional[PreCheckoutQuery] = None,
+        callback_query: Optional[CallbackQuery] = None,
+        message: Optional[Message] = None,
+        edited_message: Optional[Message] = None,
+    ) -> None:
         super().__init__()
-        self._id = update_id
-        self.update_id = int(update_id)
-        self.callback_query = callback_query
-        self.message = message
-        self.edited_message = edited_message
+
+        self._id: int = update_id
+        self.update_id: int = int(update_id)
+
+        self.pre_checkout_query: Optional[PreCheckoutQuery] = pre_checkout_query
+        self.callback_query: Optional[CallbackQuery] = callback_query
+        self.message: Optional[Message] = message
+        self.edited_message: Optional[Message] = edited_message
+
+    # ------------------------------------------------------------------
+    # Factory helpers
+    # ------------------------------------------------------------------
 
     @classmethod
     def from_dict(cls, data: Optional[Dict], bot: "Bot") -> Optional["Update"]:
@@ -59,29 +82,45 @@ class Update(BaleObject):
         if not data:
             return None
 
-        data['callback_query'] = CallbackQuery.from_dict(data.pop('callback_query', None), bot)
-        data['message'] = Message.from_dict(data.pop('message', None), bot)
-        data['edited_message'] = Message.from_dict(data.pop('edited_message', None), bot)
+        # Nested conversions ----------------------------------------------------
+        data[cls.PRE_CHECKOUT_QUERY] = PreCheckoutQuery.from_dict(
+            data.pop(cls.PRE_CHECKOUT_QUERY, None), bot
+        )
+        data[cls.CALLBACK_QUERY] = CallbackQuery.from_dict(
+            data.pop(cls.CALLBACK_QUERY, None), bot
+        )
+        data[cls.MESSAGE] = Message.from_dict(data.pop(cls.MESSAGE, None), bot)
+        data[cls.EDITED_MESSAGE] = Message.from_dict(
+            data.pop(cls.EDITED_MESSAGE, None), bot
+        )
 
         return super().from_dict(data, bot)
 
-    def __le__(self, other):
+    # ------------------------------------------------------------------
+    # Comparisons – preserve behaviour
+    # ------------------------------------------------------------------
+
+    def __eq__(self, other):  # noqa: D401 – keep original semantics
         if not isinstance(other, Update):
-            raise NotImplemented
+            return NotImplemented
+        return self.update_id == other.update_id
 
-        return self.update_id <= other.update_id
-
-    def __ge__(self, other):
+    def __lt__(self, other):  # noqa: D401
         if not isinstance(other, Update):
-            raise NotImplemented
-
-        return self.update_id >= other.update_id
-
-    def __lt__(self, other):
-        if not isinstance(other, Update):
-            raise NotImplemented
-
+            return NotImplemented
         return self.update_id < other.update_id
 
-    def __gt__(self, other):
-        return not self.__lt__(other)
+    def __le__(self, other):  # noqa: D401
+        if not isinstance(other, Update):
+            return NotImplemented
+        return self.update_id <= other.update_id
+
+    def __gt__(self, other):  # noqa: D401
+        if not isinstance(other, Update):
+            return NotImplemented
+        return self.update_id > other.update_id
+
+    def __ge__(self, other):  # noqa: D401
+        if not isinstance(other, Update):
+            return NotImplemented
+        return self.update_id >= other.update_id
